@@ -1,0 +1,66 @@
+<%# 仅做示例用途，本页面显示二维码，供用户进行微信扫码支付 %>
+<div class="container" style="padding: 50px 0 50px 0">
+    <h4 class="text-center">
+      打开手机微信
+    </h4>
+    <h4 class="text-center">
+      使用"扫一扫"扫描二维码支付
+    </h4>
+    <div class='center_content'>
+      <%= raw @qr.as_html %>
+    </div>
+    <div class="text-center">
+        <%= link_to '返回', @my_order, class: "btn btn-default" %>
+    </div>
+</div>
+
+<style>
+/* 为了二维码正确显示所需的 CSS */
+table {
+  border-width: 0;
+  border-style: none;
+  border-color: #0000ff;
+  border-collapse: collapse;
+}
+
+td {
+  border-left: solid 10px #000;
+  padding: 0;
+  margin: 0;
+  width: 0px;
+  height: 10px;
+}
+
+td.black { border-color: #000; }
+td.white { border-color: #fff; }
+</style>
+
+<style>
+  /* 让二维码居中并且距离上下有一定距离 */
+  .center_content{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 40px;
+    margin-bottom: 40px;
+  }
+</style>
+
+<script type="text/javascript">
+    var order_id = "<%=@my_order.id%>"
+    // 3秒查一次订单状态，已支付就跳转订单页
+    window.setInterval(function(){
+      $.ajax({
+        url: '/query_paylinx_info',
+        dataType: 'json',
+        data: "order_id="+order_id,
+        success: function (data, textStatus, jqXHR) {
+          if(data!=null){
+            if(data.order_state=='paid'){
+              window.location.href = "/my_orders/"+order_id;
+            }
+          }
+        }
+      });
+    }, 3000);
+</script>
